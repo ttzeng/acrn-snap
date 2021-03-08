@@ -1,0 +1,12 @@
+{
+    "type": "model",
+    "series": "16",
+    "authority-id": "<AuthorityId>",
+    "brand-id": "<BrandId>",
+    "model": "<Model>",
+    "architecture": "amd64",
+    "timestamp": "<AssertionCreationTime>",
+    "base": "core18",
+    "gadget": "acrn",
+    "kernel": "pc-kernel"
+}

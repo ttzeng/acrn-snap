@@ -1,0 +1,18 @@
+# private configurations
+/config.mk
+
+# snapcraft artifacts
+parts/
+stage/
+prime/
+snap/
+*.snap
+
+# ubuntu-image artifacts
+/seed.manifest
+/snaps.manifest
+/*.img
+/*.img.xz
+
+# signed model assertions
+/model/*.model
