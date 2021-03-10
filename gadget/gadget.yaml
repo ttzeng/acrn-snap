@@ -36,6 +36,8 @@ volumes:
             target: EFI/boot/mmx64.efi
           - source: grub.conf
             target: EFI/ubuntu/grub.conf
+          - source: usr/lib/grub/i386-pc/
+            target: EFI/ubuntu/i386-pc/
           - source: usr/lib/grub/x86_64-efi/
             target: EFI/ubuntu/x86_64-efi/
           - source: boot/acrn/acrn.bin

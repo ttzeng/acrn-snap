@@ -30,7 +30,9 @@ parts:
     plugin: python
     python-packages: [ kconfiglib ]
     stage-packages: [ grub-efi-amd64-signed, grub-pc-bin, shim-signed ]
-    prime: [ usr/lib/grub/x86_64-efi/ ]
+    prime:
+      - usr/lib/grub/i386-pc/
+      - usr/lib/grub/x86_64-efi/
 
   iasl:
     after: [ build-environ ]
