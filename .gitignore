@@ -13,6 +13,7 @@ snap/
 /snaps.manifest
 /*.img
 /*.img.xz
+images/*
 
 # signed model assertions
 /model/*.model

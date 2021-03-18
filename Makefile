@@ -14,10 +14,11 @@ LOCAL_SNAPS += $(wildcard $(foreach d,$(GADGET_DIR) $(KERNEL_DIR),$d/*.snap))
 .PHONY: all clean
 
 all: model/$(UC_MODEL_NAME).model
-	ubuntu-image snap $< $(foreach snap,$(LOCAL_SNAPS),--snap $(snap))
+	ubuntu-image snap $< $(foreach snap,$(LOCAL_SNAPS),--snap $(snap)) \
+		-O images/$(UC_MODEL_NAME)
 
 clean:
-	rm -f seed.manifest snaps.manifest *.img *.img.xz
+	rm -fr images/$(UC_MODEL_NAME)
 	rm -f model/$(UC_MODEL_NAME).model
 
 .SUFFIXES: .json .model
