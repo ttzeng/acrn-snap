@@ -23,6 +23,8 @@ GRUB_MODULES = \
 	memdisk \
 	minicmd \
 	normal \
+	multiboot \
+	multiboot2 \
 	part_gpt \
 	png \
 	reboot \
@@ -46,11 +48,13 @@ all:
 	# BIOS boot partition must be defined with an absolute offset.  The
 	# particular value here is 2049, or 0x01 0x08 0x00 0x00 in little-endian.
 	/bin/echo -n -e '\x01\x08\x00\x00' | dd of=pc-core.img seek=500 bs=1 conv=notrunc
-	grub-mkimage -d $(SNAPCRAFT_STAGE)/usr/lib/grub/x86_64-efi/ -O x86_64-efi -o grubx64.efi -p '(,gpt2)/EFI/ubuntu' $(GRUB_MODULES) multiboot
+	grub-mkimage -d $(SNAPCRAFT_STAGE)/usr/lib/grub/x86_64-efi/ -O x86_64-efi -o grubx64.efi -p '/EFI/ubuntu' -c embedded.cfg $(GRUB_MODULES) linuxefi
 
 install:
 	mkdir -p $(DESTDIR)/grub/
 	install -m 644 pc-boot.img pc-core.img grubx64.efi $(DESTDIR)/grub/
 	install -m 644 $(SNAPCRAFT_STAGE)/usr/lib/shim/shimx64.efi.signed $(DESTDIR)/grub/shim.efi.signed
 	install -m 644 $(SNAPCRAFT_STAGE)/usr/lib/shim/mmx64.efi $(DESTDIR)/grub/mmx64.efi
-	install -m 644 grub.conf $(DESTDIR)/
+	# gadget must present boot config `grub.conf` for the `snap prepare-image`
+	# command through `ubuntu-image`.
+	install -m 644 grub.conf acrn.cfg $(DESTDIR)/

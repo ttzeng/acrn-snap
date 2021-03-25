@@ -1,0 +1,33 @@
+{
+    "type": "model",
+    "series": "16",
+    "authority-id": "<AuthorityId>",
+    "brand-id": "<BrandId>",
+    "model": "<Model>",
+    "architecture": "amd64",
+    "timestamp": "<AssertionCreationTime>",
+    "base": "core20",
+    "grade": "dangerous",
+    "snaps": [
+        {
+            "name": "acrn",
+            "type": "gadget"
+        },
+        {
+            "name": "pc-kernel",
+            "type": "kernel"
+        },
+        {
+            "name": "core20",
+            "type": "base",
+            "default-channel": "latest/stable",
+            "id": "DLqre5XGLbDqg9jPtiAhRRjDuPVa5X1q"
+        },
+        {
+            "name": "snapd",
+            "type": "snapd",
+            "default-channel": "latest/stable",
+            "id": "PMrrV4ml8uWuEUDBT8dSGnKUYbevVhc4"
+        }
+    ]
+}

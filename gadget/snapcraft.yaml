@@ -1,7 +1,7 @@
 name: acrn
-version: 2.3.0-core18
+version: 2.3.0-core20
 type: gadget
-base: core18
+base: core20
 summary: ACRN PC gadget
 description: |
   PC gadget for ACRN devices.
@@ -30,9 +30,7 @@ parts:
     plugin: python
     python-packages: [ kconfiglib ]
     stage-packages: [ grub-efi-amd64-signed, grub-pc-bin, shim-signed ]
-    prime:
-      - usr/lib/grub/i386-pc/
-      - usr/lib/grub/x86_64-efi/
+    prime: [ -* ]
 
   iasl:
     after: [ build-environ ]
@@ -49,10 +47,12 @@ parts:
     plugin: make
     source: https://github.com/projectacrn/acrn-hypervisor.git
     source-tag: v2.3
+    make-parameters: [ RELEASE=0 ]
     stage-packages: [ libpciaccess-dev, libusb-1.0-0 ]
     override-prime: |
       snapcraftctl prime
-      install -D $SNAPCRAFT_PART_BUILD/build/hypervisor/acrn.bin boot/acrn/acrn.bin
+      install -D $SNAPCRAFT_PART_SRC/../build/build/hypervisor/acrn.bin boot/acrn/acrn.bin
+      install -D $SNAPCRAFT_PART_SRC/../build/build/hypervisor/acrn.out boot/acrn/acrn.out
 
   grub:
     after: [ build-environ ]

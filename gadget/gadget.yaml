@@ -20,11 +20,11 @@ volumes:
         content:
           - image: grub/pc-core.img
 
-      - name: EFI System
+      - name: ubuntu-seed
+        role: system-seed
         type: EF,C12A7328-F81F-11D2-BA4B-00A0C93EC93B
         filesystem: vfat
-        filesystem-label: system-boot
-        size: 50M
+        size: 700M
         update:
           edition: 1
         content:
@@ -32,13 +32,36 @@ volumes:
             target: EFI/boot/grubx64.efi
           - source: grub/shim.efi.signed
             target: EFI/boot/bootx64.efi
-          - source: grub/mmx64.efi
-            target: EFI/boot/mmx64.efi
-          - source: grub.conf
-            target: EFI/ubuntu/grub.conf
-          - source: usr/lib/grub/i386-pc/
-            target: EFI/ubuntu/i386-pc/
-          - source: usr/lib/grub/x86_64-efi/
-            target: EFI/ubuntu/x86_64-efi/
+          - source: acrn.cfg
+            target: EFI/acrn/acrn.cfg
+
+      - name: ubuntu-boot
+        role: system-boot
+        type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        filesystem: ext4
+        size: 700M
+        update:
+          edition: 1
+        content:
+          - source: grub/grubx64.efi
+            target: EFI/boot/grubx64.efi
+          - source: grub/shim.efi.signed
+            target: EFI/boot/bootx64.efi
           - source: boot/acrn/acrn.bin
-            target: EFI/ubuntu/acrn/acrn.bin
+            target: EFI/acrn/acrn.bin
+          - source: boot/acrn/acrn.out
+            target: EFI/acrn/acrn.out
+          - source: acrn.cfg
+            target: EFI/acrn/acrn.cfg
+
+      - name: ubuntu-save
+        role: system-save
+        type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        filesystem: ext4
+        size: 16M
+
+      - name: ubuntu-data
+        role: system-data
+        type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        filesystem: ext4
+        size: 1G
