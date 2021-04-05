@@ -24,7 +24,7 @@ volumes:
         role: system-seed
         type: EF,C12A7328-F81F-11D2-BA4B-00A0C93EC93B
         filesystem: vfat
-        size: 700M
+        size: 1500M
         update:
           edition: 1
         content:
@@ -39,7 +39,7 @@ volumes:
         role: system-boot
         type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
         filesystem: ext4
-        size: 700M
+        size: 50M
         update:
           edition: 1
         content:
@@ -64,4 +64,4 @@ volumes:
         role: system-data
         type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
         filesystem: ext4
-        size: 1G
+        size: 1500M

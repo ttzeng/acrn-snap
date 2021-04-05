@@ -14,6 +14,10 @@ apps:
       LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu:LD_LIBRARY_PATH
     command:
       usr/bin/acrn-dm
+    plugs:
+      - cifs-mount
+      - hugepages-control
+      - network-bind
 
   acrnctl:
     command:
@@ -52,6 +56,7 @@ parts:
     plugin: make
     source: https://github.com/projectacrn/acrn-hypervisor.git
     source-branch: release_2.4
+    make-parameters: [ ASL_COMPILER=/snap/acrn/current/usr/sbin/iasl ]
     override-build: |
       for patch in $SNAPCRAFT_STAGE/acrn/*.patch; do
         if [ -f $patch ]; then

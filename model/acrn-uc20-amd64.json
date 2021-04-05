@@ -14,7 +14,7 @@
             "type": "gadget"
         },
         {
-            "name": "pc-kernel",
+            "name": "acrn-kernel",
             "type": "kernel"
         },
         {
