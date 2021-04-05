@@ -1,5 +1,5 @@
 name: acrn
-version: 2.3.0-core18
+version: 2.4.0-core18
 type: gadget
 base: core18
 summary: ACRN PC gadget
@@ -14,25 +14,32 @@ apps:
       LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu:LD_LIBRARY_PATH
     command:
       usr/bin/acrn-dm
+    plugs:
+      - cifs-mount
+      - hugepages-control
+      - network-bind
 
   acrnctl:
     command:
       usr/bin/acrnctl
 
 parts:
+  staging:
+    plugin: dump
+    source: staging
+    prime: [ -* ]
+
   build-environ:
     # Install build tools and dependencies required by ACRN development
     # https://projectacrn.github.io/2.3/getting-started/building-from-source.html
     build-packages: [ gcc, git, make, libssl-dev, libpciaccess-dev, uuid-dev,
                       libsystemd-dev, libevent-dev, libxml2-dev, libusb-1.0-0-dev,
                       python3, python3-pip, libblkid-dev, e2fslibs-dev, pkg-config,
-                      libnuma-dev, liblz4-tool, flex, bison ]
+                      libnuma-dev, liblz4-tool, flex, bison, xsltproc ]
     plugin: python
-    python-packages: [ kconfiglib ]
+    python-packages: [ lxml, xmlschema ]
     stage-packages: [ grub-efi-amd64-signed, grub-pc-bin, shim-signed ]
-    prime:
-      - usr/lib/grub/i386-pc/
-      - usr/lib/grub/x86_64-efi/
+    prime: [ -* ]
 
   iasl:
     after: [ build-environ ]
@@ -45,14 +52,23 @@ parts:
       - usr/sbin/iasl
 
   acrn:
-    after: [ iasl ]
+    after: [ iasl, staging ]
     plugin: make
     source: https://github.com/projectacrn/acrn-hypervisor.git
-    source-tag: v2.3
+    source-branch: release_2.4
+    make-parameters: [ ASL_COMPILER=/snap/acrn/current/usr/sbin/iasl ]
+    override-build: |
+      for patch in $SNAPCRAFT_STAGE/acrn/*.patch; do
+        if [ -f $patch ]; then
+          git apply $patch;
+        fi;
+      done
+      snapcraftctl build
     stage-packages: [ libpciaccess-dev, libusb-1.0-0 ]
     override-prime: |
       snapcraftctl prime
-      install -D $SNAPCRAFT_PART_BUILD/build/hypervisor/acrn.bin boot/acrn/acrn.bin
+      install -D $SNAPCRAFT_PART_SRC/../build/build/hypervisor/acrn.bin boot/acrn/acrn.bin
+      install -D $SNAPCRAFT_PART_SRC/../build/build/hypervisor/acrn.out boot/acrn/acrn.out
 
   grub:
     after: [ build-environ ]

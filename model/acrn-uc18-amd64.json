@@ -8,5 +8,5 @@
     "timestamp": "<AssertionCreationTime>",
     "base": "core18",
     "gadget": "acrn",
-    "kernel": "pc-kernel"
+    "kernel": "acrn-kernel"
 }

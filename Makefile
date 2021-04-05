@@ -11,15 +11,46 @@ GADGET_DIR  ?= gadget
 KERNEL_DIR  ?= kernel
 LOCAL_SNAPS += $(wildcard $(foreach d,$(GADGET_DIR) $(KERNEL_DIR),$d/*.snap))
 
-.PHONY: all clean
+.PHONY: all gadget kernel image clean
 
-all: model/$(UC_MODEL_NAME).model
+all: gadget kernel image
+
+image: model/$(UC_MODEL_NAME).model
 	ubuntu-image snap $< $(foreach snap,$(LOCAL_SNAPS),--snap $(snap)) \
 		-O images/$(UC_MODEL_NAME)
 
-clean:
+clean-targets :=
+clean-objs    := model/$(UC_MODEL_NAME).model
+
+# Usage: $(eval $(call add-snap-rule, <type>, <folder>, <prefix>, <arguments>))
+#   <type>      : [ gadget | kernel ]
+#   <folder>    : folder containing snapcraft.yaml file
+#   <prefix>    : prefix before launching snapcraft command
+#   <arguments> : arguments to pass to snapcraft command
+define add-snap-rule =
+snapname := $(filter-out name:,$(shell grep 'name:' $2/snapcraft.yaml))
+snapver  := $(filter-out version:,$(shell grep 'version:' $2/snapcraft.yaml))
+snapfile := $2/$$(snapname)_$$(snapver)_amd64.snap
+
+$1: $$(snapfile)
+$$(snapfile): $2/snapcraft.yaml
+	@echo 'Building $$@ ...'
+	cd $2; $3snapcraft $4
+
+.PHONY: $1-clean
+clean-objs += $$(snapfile)
+clean-targets += $1-clean
+
+$1-clean:
+	cd $2; $3snapcraft clean $4
+endef
+
+$(eval $(call add-snap-rule, gadget, $(GADGET_DIR),sudo ,))
+$(eval $(call add-snap-rule, kernel, $(KERNEL_DIR),,))
+
+clean: $(clean-targets)
 	rm -fr images/$(UC_MODEL_NAME)
-	rm -f model/$(UC_MODEL_NAME).model
+	rm -f $(clean-objs)
 
 .SUFFIXES: .json .model
 

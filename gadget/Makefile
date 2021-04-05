@@ -23,6 +23,8 @@ GRUB_MODULES = \
 	memdisk \
 	minicmd \
 	normal \
+	multiboot \
+	multiboot2 \
 	part_gpt \
 	png \
 	reboot \
@@ -46,7 +48,7 @@ all:
 	# BIOS boot partition must be defined with an absolute offset.  The
 	# particular value here is 2049, or 0x01 0x08 0x00 0x00 in little-endian.
 	/bin/echo -n -e '\x01\x08\x00\x00' | dd of=pc-core.img seek=500 bs=1 conv=notrunc
-	grub-mkimage -d $(SNAPCRAFT_STAGE)/usr/lib/grub/x86_64-efi/ -O x86_64-efi -o grubx64.efi -p '(,gpt2)/EFI/ubuntu' $(GRUB_MODULES) multiboot
+	grub-mkimage -d $(SNAPCRAFT_STAGE)/usr/lib/grub/x86_64-efi/ -O x86_64-efi -o grubx64.efi -p '/EFI/ubuntu' $(GRUB_MODULES) linuxefi
 
 install:
 	mkdir -p $(DESTDIR)/grub/

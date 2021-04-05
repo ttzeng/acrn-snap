@@ -1,0 +1,40 @@
+name: acrn-kernel
+version: 2.3.0-uc18
+type: kernel
+summary: ACRN kernel
+description: |
+  Linux kernel for running ACRN service VM
+grade: devel
+confinement: strict
+
+parts:
+  build-environ:
+    plugin: nil
+    stage-packages:
+      - linux-firmware
+    organize:
+      lib/firmware: firmware
+    prime: [ firmware ]
+
+  kernel:
+    after: [ build-environ ]
+    plugin: kernel
+    source: https://github.com/projectacrn/acrn-kernel
+    source-type: git
+    source-tag: v2.3
+    kernel-with-firmware: false
+    kconfigfile: $SNAPCRAFT_PART_BUILD/kernel_config_uefi_sos
+    kconfigs:
+      - CONFIG_SECURITY_APPARMOR=y
+      - CONFIG_STRICT_DEVMEM=y
+      - CONFIG_DEFAULT_SECURITY_APPARMOR=y
+      - CONFIG_CC_STACKPROTECTOR=y
+      - CONFIG_CC_STACKPROTECTOR_STRONG=y
+      - CONFIG_DEBUG_RODATA=y
+      - CONFIG_DEBUG_SET_MODULE_RONX=y
+      - CONFIG_ENCRYPTED_KEYS=y
+      - CONFIG_DEVPTS_MULTIPLE_INSTANCES=y
+      - CONFIG_AUTOFS4_FS=y
+      - CONFIG_VIRTIO_BLK=y
+      - CONFIG_SECURITY_SELINUX=n
+    build-packages: [ bison, cpio, dpkg-dev, flex, libssl-dev ]
