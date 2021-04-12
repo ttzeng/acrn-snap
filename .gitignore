@@ -4,6 +4,9 @@
 # staging patches
 /gadget/staging/*/*.patch
 
+# drop-in user VM OS images
+/uos/images/*.img.xz
+
 # snapcraft artifacts
 parts/
 stage/

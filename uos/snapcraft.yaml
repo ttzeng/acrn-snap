@@ -1,0 +1,35 @@
+name: acrn-uos
+base: core20
+summary: ACRN User VM
+description: |
+  User VM to be launched on ACRN
+grade: devel
+confinement: devmode
+adopt-info: uos
+
+apps:
+  launch:
+    command: uos/launch.sh
+    plugs: [ network-control ]
+  xzcat:
+    environment:
+      LD_LIBRARY_PATH: $SNAP/lib/x86_64-linux-gnu:LD_LIBRARY_PATH
+    command: usr/bin/xzcat
+
+parts:
+  environ:
+    plugin: nil
+    stage-packages: [ xz-utils, liblzma5 ]
+
+  uos:
+    after: [ environ ]
+    plugin: dump
+    source: .
+    override-prime: |
+      set -ex
+      xzimg=$(basename `ls $SNAPCRAFT_PART_SRC/images/*.img.xz`)
+      snapcraftctl set-version ${xzimg%.img.xz}
+      mkdir -p uos
+      sed -e 's/uos.img/'${xzimg%.xz}'/1' $SNAPCRAFT_PART_SRC/launch.sh > uos/launch.sh
+      chmod a+rx uos/launch.sh
+      cp $SNAPCRAFT_PART_SRC/images/${xzimg} uos/
