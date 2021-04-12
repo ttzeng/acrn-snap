@@ -28,12 +28,14 @@ clean-objs    := model/$(UC_MODEL_NAME).model
 #   <prefix>    : prefix before launching snapcraft command
 #   <arguments> : arguments to pass to snapcraft command
 define add-snap-rule =
+snap-deps :=
+-include $2/depends.mk
 snapname := $(filter-out name:,$(shell grep 'name:' $2/snapcraft.yaml))
 snapver  := $(filter-out version:,$(shell grep 'version:' $2/snapcraft.yaml))
 snapfile := $2/$$(snapname)_$$(snapver)_amd64.snap
 
 $1: $$(snapfile)
-$$(snapfile): $2/snapcraft.yaml
+$$(snapfile): $$(addprefix $2/,snapcraft.yaml $$(snap-deps))
 	@echo 'Building $$@ ...'
 	cd $2; $3snapcraft $4
 
