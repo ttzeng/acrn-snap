@@ -1,6 +1,9 @@
 # private configurations
 /config.mk
 
+# staging patches
+/gadget/staging/*/*.patch
+
 # snapcraft artifacts
 parts/
 stage/
@@ -9,11 +12,10 @@ snap/
 *.snap
 
 # ubuntu-image artifacts
-/seed.manifest
-/snaps.manifest
-/*.img
-/*.img.xz
-images/*
+/images/*/seed.manifest
+/images/*/snaps.manifest
+/images/*/*.img
+/images/*/*.img.xz
 
 # signed model assertions
 /model/*.model
