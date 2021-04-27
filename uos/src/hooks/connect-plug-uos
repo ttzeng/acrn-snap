@@ -1,0 +1,11 @@
+#!/bin/bash
+# Copyright (C) 2021 Intel Corporation.
+# SPDX-License-Identifier: BSD-3-Clause
+
+img=uos.img
+
+if [ ! -f $SNAP_COMMON/uos/$img ]; then
+    echo 'Setting up user VM image at' $SNAP_COMMON/uos/$img
+    xzcat $SNAP/$img.xz > $SNAP_COMMON/uos/$img
+    cp $SNAP/launch_${img%.img}.sh $SNAP_COMMON/uos/
+fi

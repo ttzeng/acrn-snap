@@ -4,17 +4,23 @@ summary: ACRN User VM
 description: |
   User VM to be launched on ACRN
 grade: devel
-confinement: devmode
+confinement: strict
 adopt-info: uos
 
 apps:
-  launch:
-    command: uos/launch.sh
-    plugs: [ network-control ]
   xzcat:
     environment:
       LD_LIBRARY_PATH: $SNAP/lib/x86_64-linux-gnu:LD_LIBRARY_PATH
     command: usr/bin/xzcat
+
+plugs:
+  executables:
+    interface: content
+    target: $SNAP/bin
+
+  uos:
+    interface: content
+    target: $SNAP_COMMON/uos
 
 parts:
   environ:
@@ -24,12 +30,14 @@ parts:
   uos:
     after: [ environ ]
     plugin: dump
-    source: .
+    source: src
     override-prime: |
       set -ex
       xzimg=$(basename `ls $SNAPCRAFT_PART_SRC/images/*.img.xz`)
-      snapcraftctl set-version ${xzimg%.img.xz}
-      mkdir -p uos
-      sed -e 's/uos.img/'${xzimg%.xz}'/1' $SNAPCRAFT_PART_SRC/launch.sh > uos/launch.sh
-      chmod a+rx uos/launch.sh
-      cp $SNAPCRAFT_PART_SRC/images/${xzimg} uos/
+      osname=${xzimg%.img.xz}
+      snapcraftctl set-version $osname
+      mkdir -p snap/hooks/
+      sed -e 's/uos.img/'${xzimg%.xz}'/1' $SNAPCRAFT_PART_SRC/hooks/connect-plug-uos > snap/hooks/connect-plug-uos
+      sed -e 's/uos.img/'${xzimg%.xz}'/1' $SNAPCRAFT_PART_SRC/launch.sh > launch_$osname.sh
+      chmod a+rx snap/hooks/connect-plug-uos launch_$osname.sh
+      cp $SNAPCRAFT_PART_SRC/images/$xzimg .

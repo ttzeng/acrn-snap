@@ -2,13 +2,11 @@
 # Copyright (C) 2021 Intel Corporation.
 # SPDX-License-Identifier: BSD-3-Clause
 
-PATH=$PATH:/snap/bin
-
 img=uos.img
 
-if [ ! -f $SNAP_COMMON/$img ]; then
-    echo 'Setting up user VM image at' $SNAP_COMMON/$img
-    $SNAP_NAME.xzcat $SNAP/uos/$img.xz > $SNAP_COMMON/$img
+if [ ! -f $SNAP_COMMON/uos/$img ]; then
+    echo User VM image $SNAP_COMMON/uos/$img not found.
+    exit
 fi
 
 offline_path="/sys/class/vhm/acrn_vhm"
@@ -20,11 +18,11 @@ fi
 function launch_uos()
 {
 mac=$(cat /sys/class/net/e*/address)
-vm_name=vm$1
+vm_name=vm-${img%.img}
 mac_seed=${mac:9:8}-${vm_name}
 
 #check if the vm is running or not
-vm_ps=$(pgrep -a -f acrn.acrn-dm)
+vm_ps=$(pgrep -a -f acrn-dm)
 result=$(echo $vm_ps | grep -w "${vm_name}")
 if [[ "$result" != "" ]]; then
   echo "$vm_name is running, can't create twice!"
@@ -42,10 +40,10 @@ pm_vuart_node=" -s 1:0,lpc -l com2,/run/acrn/life_mngr_"$vm_name
 #for memsize setting
 mem_size=4096M
 
-acrn.acrn-dm -A -m $mem_size -s 0:0,hostbridge \
+acrn-dm -A -m $mem_size -s 0:0,hostbridge \
   -s 5,virtio-console,@stdio:stdio_port \
   -s 6,virtio-hyper_dmabuf \
-  -s 3,virtio-blk,$SNAP_COMMON/$img \
+  -s 3,virtio-blk,/var/snap/acrn/common/uos/$img \
   -s 4,virtio-net,tap0 \
   -s 7,virtio-rnd \
   --ovmf /snap/acrn/current/usr/share/acrn/bios/OVMF.fd \
@@ -70,4 +68,4 @@ for i in `ls -d /sys/devices/system/cpu/cpu[1-99]`; do
         fi
 done
 
-launch_uos 1
+launch_uos

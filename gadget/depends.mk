@@ -1,1 +1,1 @@
-snap-deps := Makefile gadget.yaml acrn.conf
+snap-deps := Makefile gadget.yaml grub.conf

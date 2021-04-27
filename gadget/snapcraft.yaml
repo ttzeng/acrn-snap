@@ -9,6 +9,16 @@ grade: devel
 confinement: strict
 
 apps:
+  launch-uos:
+    command:
+      bin/launch_uos.sh
+    plugs:
+      - cifs-mount
+      - hugepages-control
+      - log-observe
+      - netlink-connector
+      - network-bind
+
   acrn-dm:
     environment:
       LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu:LD_LIBRARY_PATH
@@ -17,11 +27,26 @@ apps:
     plugs:
       - cifs-mount
       - hugepages-control
+      - log-observe
+      - netlink-connector
       - network-bind
 
   acrnctl:
     command:
       usr/bin/acrnctl
+    plugs:
+      - log-observe
+
+slots:
+  executables:
+    interface: content
+    read:
+      - $SNAP/usr/bin
+
+  uos:
+    interface: content
+    write:
+      - $SNAP_COMMON/uos
 
 parts:
   staging:
@@ -69,6 +94,13 @@ parts:
       snapcraftctl prime
       install -D $SNAPCRAFT_PART_SRC/../build/build/hypervisor/acrn.bin boot/acrn/acrn.bin
       install -D $SNAPCRAFT_PART_SRC/../build/build/hypervisor/acrn.out boot/acrn/acrn.out
+
+  utils:
+    plugin: dump
+    source: utils
+    organize:
+      uos/launch_uos.sh: bin/launch_uos.sh
+    prime: [ bin/ ]
 
   grub:
     after: [ build-environ ]
